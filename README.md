@@ -7,6 +7,8 @@ workflow by allowing you to cycle through background jobs using a single keyboar
 shortcut. This plugin is particularly useful for developers and system administrators
 who frequently work with multiple background processes.
 
+[![asciicast](https://asciinema.org/a/687404.svg)](https://asciinema.org/a/687404)
+
 ## Features
 
 - Cycle through background jobs using Ctrl+Z
