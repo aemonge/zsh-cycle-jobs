@@ -4,22 +4,20 @@ zsh_cycle_jobs_cycle() {
         touch $FANCY_ZSH_LAST_JOB_NUMBER
     fi
 
-    # Get the first job number, and set it as last JOB
     local last_job=$(cat $FANCY_ZSH_LAST_JOB_NUMBER)
     if [ -z "$last_job" ]; then
         jobs | awk -F'[][]' '{print $2}' | /usr/bin/head -1 > $FANCY_ZSH_LAST_JOB_NUMBER
         last_job=$(cat $FANCY_ZSH_LAST_JOB_NUMBER)
     fi
 
-    # No active jobs
     if [ -z "$last_job" ]; then
-        echo -n "No active jobs to cycle through"
+        # echo -n "No active jobs to cycle through"
         return
     fi
 
     local next_job=$(get_next_job $last_job)
     if [ -z "$next_job" ]; then
-        echo -n "No more jobs to cycle through"
+        # echo -n "No more jobs to cycle through"
         return
     fi
 
