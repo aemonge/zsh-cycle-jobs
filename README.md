@@ -15,6 +15,7 @@ work with multiple background processes.
 - Customizable keyboard shortcut (defaults to Ctrl+J)
 - Clean job display with status information
 - Easy to install and use
+- **Automatic foregrounding when only one job exists**
 
 ## Installation (zinit)
 
@@ -27,6 +28,9 @@ zinit load aemonge/zsh-cycle-jobs
 Once installed, you can use the plugin by pressing the configured keyboard shortcut
 (default is Ctrl+J) while in your terminal. This will display an fzf menu of your
 background jobs, allowing you to select which one to bring to the foreground.
+
+If only one background job exists, it will be automatically brought to the foreground
+without showing the fzf menu.
 
 ### How it works
 
@@ -72,4 +76,4 @@ aemonge
 
 #### Version
 
-0.0.2
+0.0.3

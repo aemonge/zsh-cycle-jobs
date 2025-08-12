@@ -2,7 +2,7 @@
 
 # ZSH FZF Job Chooser Plugin
 # Author: aemonge
-# Version: 0.0.2
+# Version: 0.0.3
 
 # Configuration - customizable via environment variable
 : ${FZF_JOB_KEYBIND:="^J"}  # Default to Ctrl+J, can be overridden
@@ -46,6 +46,15 @@ _fzf_job_chooser() {
         if (length(cmd) == 0) cmd = "unknown";
         printf "[%s] %s %s\n", job_num, state, cmd;
     }')"})
+
+    # If only one job, foreground it directly
+    if [[ ${#job_lines[@]} -eq 1 ]]; then
+        local job_id
+        job_id=$(echo "${job_lines[1]}" | awk 'match($0, /\[([0-9]+)\]/, arr) { print arr[1] }')
+        BUFFER="fg %${job_id}"
+        zle accept-line
+        return 0
+    fi
 
     # Reverse the array
     job_lines=(${(Oa)job_lines})
