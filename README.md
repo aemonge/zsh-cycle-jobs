@@ -3,17 +3,17 @@
 ## Description
 
 The ZSH Cycle Jobs Plugin is a simple yet powerful tool that enhances your terminal
-workflow by allowing you to cycle through background jobs using a single keyboard
-shortcut. This plugin is particularly useful for developers and system administrators
-who frequently work with multiple background processes.
+workflow by allowing you to select background jobs using an interactive fzf menu. This
+plugin is particularly useful for developers and system administrators who frequently
+work with multiple background processes.
 
 [![asciicast](https://asciinema.org/a/687404.svg)](https://asciinema.org/a/687404)
 
 ## Features
 
-- Cycle through background jobs using Ctrl+Z
-- Automatically handles circular rotation of jobs
-- Maintains state between terminal sessions
+- Interactive selection of background jobs using fzf
+- Customizable keyboard shortcut (defaults to Ctrl+J)
+- Clean job display with status information
 - Easy to install and use
 
 ## Installation (zinit)
@@ -24,23 +24,39 @@ zinit load aemonge/zsh-cycle-jobs
 
 ## Usage
 
-Once installed, you can use the plugin by pressing Ctrl+Z while in your terminal. This
-will cycle through your background jobs, bringing each one to the foreground in turn.
+Once installed, you can use the plugin by pressing the configured keyboard shortcut
+(default is Ctrl+J) while in your terminal. This will display an fzf menu of your
+background jobs, allowing you to select which one to bring to the foreground.
 
 ### How it works
 
-The plugin keeps track of the last accessed job number in a temporary file. When you
-press Ctrl+Z, it calculates the next job in the sequence and brings it to the foreground
-using the fg command.
+The plugin uses the `jobs -l` command to list all background jobs, then presents them in
+an interactive fzf menu. When you select a job, it brings it to the foreground using the
+`fg` command.
 
-## Configuration
+### Customization
 
-No additional configuration is required. The plugin works out of the box.
+You can customize the keyboard shortcut by setting the `FZF_JOB_KEYBIND` environment
+variable before loading the plugin:
+
+```zsh
+# Use Ctrl+Z instead of default Ctrl+J
+export FZF_JOB_KEYBIND="^Z"
+zinit load aemonge/zsh-cycle-jobs
+
+# Use Ctrl+G
+export FZF_JOB_KEYBIND="^G"
+zinit load aemonge/zsh-cycle-jobs
+```
+
+## Requirements
+
+- ZSH shell
+- [fzf](https://github.com/junegunn/fzf) must be installed
 
 ## Compatibility
 
 This plugin is designed for ZSH and has been tested on Unix-like systems (Linux, macOS).
-It may not work correctly on other operating systems.
 
 ## Contributing
 
@@ -56,4 +72,4 @@ aemonge
 
 #### Version
 
-0.0.1
+0.0.2
