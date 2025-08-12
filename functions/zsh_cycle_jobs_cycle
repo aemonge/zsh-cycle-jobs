@@ -22,5 +22,5 @@ zsh_cycle_jobs_cycle() {
     fi
 
     echo -n "$next_job" > $FANCY_ZSH_LAST_JOB_NUMBER
-    fg %$last_job 
+    fg %$last_job
 }
