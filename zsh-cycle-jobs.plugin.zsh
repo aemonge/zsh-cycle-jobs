@@ -47,9 +47,12 @@ _fzf_job_chooser() {
         printf "[%s] %s %s\n", job_num, state, cmd;
     }')"})
 
-    # Use fzf to select a job with Enter key binding
+    # Reverse the array
+    job_lines=(${(Oa)job_lines})
+
+    # Use fzf to select a job with Enter key binding AND Ctrl+J binding
     local selected
-    selected=$(printf "%s\n" "${job_lines[@]}" | fzf --prompt="Select job: " --bind "enter:accept")
+    selected=$(printf "%s\n" "${job_lines[@]}" | fzf --prompt="Select job: " --bind "enter:accept,ctrl-j:accept")
 
     if [[ -z "$selected" ]]; then
         return 1
