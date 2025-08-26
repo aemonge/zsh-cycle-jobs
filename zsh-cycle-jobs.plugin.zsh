@@ -40,9 +40,10 @@ _fzf_job_chooser() {
         # Clean up trailing space and weird characters
         gsub(/[[:cntrl:]]/, "", cmd);  # Remove control characters
         gsub(/\|/, "", cmd);           # Remove pipe characters that might confuse display
-        gsub(/\[.+\]/, "", cmd);      # Remove bracketed parts that might be prompts
-        cmd = substr(cmd, 1, 100);    # Limit length to prevent display issues
-        gsub(/ $/, "", cmd);          # Remove trailing space
+        gsub(/\[.+\]/, "", cmd);       # Remove bracketed parts that might be prompts
+        gsub(/\[pw\]/, "", cmd);       # Remove [pw] specifically
+        cmd = substr(cmd, 1, 100);     # Limit length to prevent display issues
+        gsub(/ $/, "", cmd);           # Remove trailing space
         if (length(cmd) == 0) cmd = "unknown";
         printf "[%s] %s %s\n", job_num, state, cmd;
     }')"})
