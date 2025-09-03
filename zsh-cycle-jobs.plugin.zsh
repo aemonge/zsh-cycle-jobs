@@ -9,76 +9,42 @@
 
 # Function to choose a job with fzf and foreground it
 _fzf_job_chooser() {
-    # Check if fzf is installed
     if ! command -v fzf >/dev/null; then
         zle -M "fzf not found. Please install fzf."
         return 1
     fi
 
-    local jobs_list
-    jobs_list=$(jobs -l)
-
-    if [[ -z "$jobs_list" ]]; then
+    # Check if there are any jobs
+    if [[ ${#jobtexts} -eq 0 ]]; then
         zle -M "No jobs found"
         return 1
     fi
 
-    # Parse and format jobs for fzf (robust parsing)
-    local job_lines
-    job_lines=(${(f)"$(jobs -l | awk '{
-        # Extract job number (remove brackets)
-        job_num = substr($1, 2, length($1)-2);
-        # Extract process ID (2nd field)
-        pid = $2;
-        # Extract state (3rd field)
-        state = $3;
-        # Extract command (everything from 4th field onwards)
-        cmd = "";
-        for (i=4; i<=NF; i++) {
-            cmd = cmd $i " ";
-        }
-        # Clean up trailing space and weird characters
-        gsub(/[[:cntrl:]]/, "", cmd);  # Remove control characters
-        gsub(/\|/, "", cmd);           # Remove pipe characters that might confuse display
-        gsub(/\[.+\]/, "", cmd);       # Remove bracketed parts that might be prompts
-        gsub(/\[pw\]/, "", cmd);       # Remove [pw] specifically
-        cmd = substr(cmd, 1, 100);     # Limit length to prevent display issues
-        gsub(/ $/, "", cmd);           # Remove trailing space
-        if (length(cmd) == 0) cmd = "unknown";
-        printf "[%s] %s %s\n", job_num, state, cmd;
-    }')"})
+    # Build job list using zsh built-in arrays - guaranteed clean!
+    local job_lines=()
+    for job_num in ${(k)jobtexts}; do
+        local state=${jobstates[$job_num]%%:*}
+        local cmd=${jobtexts[$job_num]}
+        cmd=${cmd:0:100}
+        [[ -z "$cmd" ]] && cmd="unknown"
+        job_lines+=("[${job_num}] ${state} ${cmd}")
+    done
 
-    # If only one job, foreground it directly
+    # Rest of your logic unchanged...
     if [[ ${#job_lines[@]} -eq 1 ]]; then
-        local job_id
-        job_id=$(echo "${job_lines[1]}" | awk 'match($0, /\[([0-9]+)\]/, arr) { print arr[1] }')
+        local job_id=$(echo "${job_lines[1]}" | awk 'match($0, /\[([0-9]+)\]/, arr) { print arr[1] }')
         BUFFER="fg %${job_id}"
         zle accept-line
         return 0
     fi
 
-    # Reverse the array
     job_lines=(${(Oa)job_lines})
+    local selected=$(printf "%s\n" "${job_lines[@]}" | fzf --prompt="Select job: ")
 
-    # Use fzf to select a job with Enter key binding AND Ctrl+J binding
-    local selected
-    selected=$(printf "%s\n" "${job_lines[@]}" | fzf --prompt="Select job: " --bind "enter:accept,ctrl-j:accept")
-
-    if [[ -z "$selected" ]]; then
-        return 1
+    if [[ -n "$selected" ]]; then
+        local job_id=$(echo "$selected" | awk 'match($0, /\[([0-9]+)\]/, arr) { print arr[1] }')
+        [[ -n "$job_id" ]] && BUFFER="fg %${job_id}" && zle accept-line
     fi
-
-    # Extract job number from selection
-    local job_id
-    job_id=$(echo "$selected" | awk 'match($0, /\[([0-9]+)\]/, arr) { print arr[1] }')
-
-    if [[ -z "$job_id" ]]; then
-        return 1
-    fi
-
-    # Bring selected job to foreground
-    BUFFER="fg %${job_id}"
-    zle accept-line
 }
 
 # Create ZLE widget and bind to customizable key
